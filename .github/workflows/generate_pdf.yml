@@ -1,0 +1,40 @@
+# This is a basic workflow to help you get started with Actions
+
+name: generate_pdf
+
+# Controls when the action will run. 
+on:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: generated-latex
+
+      - name: Github Action for LaTeX
+        uses: xu-cheng/latex-action@v2
+        with:
+          latexmk_use_xelatex: true
+          work_in_root_file_dir: true
+          root_file: projects/undergraduate/Mathematical_Physics_III/LaTeX/main.tex
+
+      - run: |
+          find . -type f,l ! -iwholename "./.git/*" ! -iname "*.pdf" -delete
+          mv projects/undergraduate/Mathematical_Physics_III/LaTeX/main.pdf .
+          touch .nojekyll
+
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: Generated LaTeX files
+          branch: gh-pages
+          push_options: '--force'    
+          create_branch: true

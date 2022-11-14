@@ -196,7 +196,7 @@ ipython_config.py
 # these rules might exclude image files for figures etc.
 # *.ps
 # *.eps
-*.pdf
+# *.pdf
 
 ## Generated if empty string is given at "Please type another file name for output:"
 .pdf
@@ -476,4 +476,3 @@ TSWLatexianTemp*
 # option is specified. Footnotes are the stored in a file with suffix Notes.bib.
 # Uncomment the next line to have this generated file ignored.
 #*Notes.bib
-
