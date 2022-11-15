@@ -21,6 +21,7 @@ def jupyter_notebook_to_latex(path_to_jupyter_notebooks, path_to_latex_files, pa
     if path_to_resources:
         for i in get_files(path_to_jupyter_notebooks, "_files"):
             os.system("cp -r " + path_to_jupyter_notebooks + "/" + i + " " + path_to_resources)
+        os.system("cp -r " + path_to_jupyter_notebooks + "/resources" + " " + path_to_resources)
 
     try:
         os.mkdir(path_to_latex_files)
