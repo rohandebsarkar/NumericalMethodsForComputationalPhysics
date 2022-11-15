@@ -22,7 +22,10 @@ def jupyter_notebook_to_latex(path_to_jupyter_notebooks, path_to_latex_files, pa
         for i in get_files(path_to_jupyter_notebooks, "_files"):
             os.system("cp -r " + path_to_jupyter_notebooks + "/" + i + " " + path_to_resources)
 
-    os.mkdir(path_to_latex_files)
+    try:
+        os.mkdir(path_to_latex_files)
+    except OSError as error:
+        print(error) 
 
     latex_files = get_files(path_to_jupyter_notebooks, ".tex")
     for i in latex_files:
