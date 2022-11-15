@@ -7,8 +7,6 @@ on:
   # Triggers the workflow on push or pull request events but only for the main branch
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -36,7 +34,5 @@ jobs:
           branch: generated-latex
           file_pattern: 'projects/undergraduate/Mathematical_Physics_III/LaTeX/*.tex'
           disable_globbing: true
-          skip_dirty_check: true
           push_options: '--force'
           create_branch: true
-

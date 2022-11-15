@@ -4,6 +4,10 @@ name: generate_pdf
 
 # Controls when the action will run. 
 on:
+  # Triggers the workflow on push or pull request events but only for the main branch
+  push:
+    branches: [ generated-latex ]
+
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
@@ -29,12 +33,11 @@ jobs:
 
       - run: |
           find . -type f,l ! -iwholename "./.git/*" ! -iname "*.pdf" -delete
-          mv projects/undergraduate/Mathematical_Physics_III/LaTeX/main.pdf .
           touch .nojekyll
 
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          commit_message: Generated LaTeX files
+          commit_message: Deployed PDFs from `generated-latex`
           branch: gh-pages
           push_options: '--force'    
           create_branch: true
