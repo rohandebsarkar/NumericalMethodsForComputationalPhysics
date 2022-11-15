@@ -32,7 +32,5 @@ jobs:
         with:
           commit_message: Generated LaTeX files
           branch: generated-latex
-          file_pattern: 'projects/undergraduate/Mathematical_Physics_III/LaTeX/*.tex'
-          disable_globbing: true
           push_options: '--force'
           create_branch: true
