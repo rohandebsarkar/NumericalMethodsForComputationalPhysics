@@ -31,7 +31,7 @@ jobs:
         with:
           latexmk_use_xelatex: true
           work_in_root_file_dir: true
-          root_file: projects/undergraduate/Mathematical_Physics_III/LaTeX/main.tex
+          root_file: '*.tex'
 
       - run: |
           find . -type f,l ! -iwholename "./.git/*" ! -iname "*.pdf" -delete
