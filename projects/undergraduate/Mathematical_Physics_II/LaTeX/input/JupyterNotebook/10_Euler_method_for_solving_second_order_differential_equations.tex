@@ -1,0 +1,571 @@
+    
+    
+    
+
+    
+    \hypertarget{euler-method-for-solving-second-order-differential-equations}{%
+\section{Euler method for solving second-order differential
+equations}\label{euler-method-for-solving-second-order-differential-equations}}
+
+    Similar to the first-order Euler method, the second-order differential
+equations can also solved using the Euler method.
+
+Previously we got, \[f(x_n) \approx f(x_{n-1}) + h \cdot f'(x_{n-1})\]
+
+Replacing \(f(x_n)\) with its derivative,
+\[f'(x_n) \approx f'(x_{n-1}) + h \cdot f''(x_{n-1})\]
+
+Putting this equation into the previous one,
+\[f(x_n) \approx f(x_{n-1}) + h \left[ f'(x_{n-1}) + h \cdot f''(x_{n-1}) \right]\]
+\[f(x_n) \approx f(x_{n-1}) + h \cdot f'(x_{n-1}) + h^2 \cdot f''(x_{n-1})\]
+
+    Again we can also reach here from the Taylor expansion, but this time we
+have to consider upto the third term,
+\[f(x_n) \approx f(x_{n-1}) + h \cdot f'(x_{n-1}) + h^2 \cdot f''(x_{n-1})\]
+
+    But while writing the code we will first eveluate the first derivaitve
+using the euler method and then again use the first derivetive to
+evalute the function itsef.
+\[f(x_n) = f(x_{n-1}) + h \cdot f'(x_{n-1})\]
+\[f'(x_n) = f'(x_{n-1}) + h \cdot f''(x_{n-1})\]
+
+For this we would not only have to provide the initial value of
+\(f(x)\), but also the intial value of \(f'(x)\) both at \(x= x_0\),
+which will be starting point for the Euler algorithm when solving for
+\(f(x)\) and \(f'(x)\) respectively. This would also eliminate the two
+constants we would have got from solving the second-order differential
+equations.
+
+    \hypertarget{code}{%
+\subsection{Code}\label{code}}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{1}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k+kn}{from} \PY{n+nn}{numpy} \PY{k+kn}{import} \PY{n}{cos}\PY{p}{,} \PY{n}{empty}\PY{p}{,} \PY{n}{exp}\PY{p}{,} \PY{n}{pi}\PY{p}{,} \PY{n}{sin}
+\PY{k+kn}{from} \PY{n+nn}{scipy}\PY{n+nn}{.}\PY{n+nn}{constants} \PY{k+kn}{import} \PY{n}{g}
+\PY{k+kn}{from} \PY{n+nn}{matplotlib} \PY{k+kn}{import} \PY{n}{pyplot} \PY{k}{as} \PY{n}{plt}
+
+\PY{c+c1}{\PYZsh{} Default configuaration for matplotlib}
+\PY{n}{plt}\PY{o}{.}\PY{n}{style}\PY{o}{.}\PY{n}{use}\PY{p}{(}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{science}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{ieee}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{rcParams}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{figure.figsize}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]} \PY{o}{=} \PY{p}{(}\PY{l+m+mi}{10}\PY{p}{,} \PY{l+m+mi}{5}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{2}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} Function to generate `n` evenly spaced points between limits `a` and `b`}
+\PY{k}{def} \PY{n+nf}{generate\PYZus{}points}\PY{p}{(}\PY{n}{a}\PY{p}{,} \PY{n}{b}\PY{p}{,} \PY{n}{h}\PY{p}{)}\PY{p}{:}
+
+    \PY{c+c1}{\PYZsh{} Calculating the number of points}
+    \PY{n}{n} \PY{o}{=} \PY{n+nb}{int}\PY{p}{(}\PY{p}{(}\PY{p}{(}\PY{n}{b} \PY{o}{\PYZhy{}} \PY{n}{a}\PY{p}{)} \PY{o}{/} \PY{n}{h}\PY{p}{)} \PY{o}{+} \PY{l+m+mi}{1}\PY{p}{)}
+
+    \PY{c+c1}{\PYZsh{} Creating an empty array to store the points}
+    \PY{n}{points} \PY{o}{=} \PY{n}{empty}\PY{p}{(}\PY{n}{n}\PY{p}{)}
+
+    \PY{c+c1}{\PYZsh{} Generating the points}
+    \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{n}\PY{p}{)}\PY{p}{:}
+        \PY{n}{points}\PY{p}{[}\PY{n}{i}\PY{p}{]} \PY{o}{=} \PY{n}{a}
+        \PY{n}{a} \PY{o}{+}\PY{o}{=} \PY{n}{h}
+
+    \PY{k}{return} \PY{n}{points}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{3}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} Code for solving second\PYZhy{}order ordinary differential equations using Euler method}
+\PY{k}{def} \PY{n+nf}{solve\PYZus{}euler}\PY{p}{(}\PY{n}{y\PYZus{}prime\PYZus{}prime}\PY{p}{,} \PY{n}{x\PYZus{}i}\PY{p}{,} \PY{n}{x\PYZus{}f}\PY{p}{,} \PY{n}{y\PYZus{}i}\PY{p}{,} \PY{n}{y\PYZus{}prime\PYZus{}i}\PY{p}{,} \PY{n}{h}\PY{p}{)}\PY{p}{:}
+
+    \PY{c+c1}{\PYZsh{} Generating equispaced points}
+    \PY{n}{x} \PY{o}{=} \PY{n}{generate\PYZus{}points}\PY{p}{(}\PY{n}{x\PYZus{}i}\PY{p}{,} \PY{n}{x\PYZus{}f}\PY{p}{,} \PY{n}{h}\PY{p}{)}
+
+    \PY{c+c1}{\PYZsh{} Creating two arrays to store `y\PYZus{}prime` and `y`}
+    \PY{n}{y\PYZus{}prime} \PY{o}{=} \PY{n}{empty}\PY{p}{(}\PY{n}{x}\PY{o}{.}\PY{n}{size}\PY{p}{)}
+    \PY{n}{y} \PY{o}{=} \PY{n}{empty}\PY{p}{(}\PY{n}{x}\PY{o}{.}\PY{n}{size}\PY{p}{)}
+
+    \PY{c+c1}{\PYZsh{} Initialising `y\PYZus{}prime` and `y` with initial values}
+    \PY{n}{y\PYZus{}prime}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]} \PY{o}{=} \PY{n}{y\PYZus{}prime\PYZus{}i}
+    \PY{n}{y}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]} \PY{o}{=} \PY{n}{y\PYZus{}i}
+
+    \PY{c+c1}{\PYZsh{} Evaluating the function `y\PYZus{}prime` and `y` at the remaining points}
+    \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{,} \PY{n}{x}\PY{o}{.}\PY{n}{size}\PY{p}{)}\PY{p}{:}
+        \PY{n}{y\PYZus{}prime}\PY{p}{[}\PY{n}{i}\PY{p}{]} \PY{o}{=} \PY{n}{y\PYZus{}prime}\PY{p}{[}\PY{n}{i}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{]} \PY{o}{+} \PY{n}{h} \PY{o}{*} \PYZbs{}
+            \PY{n}{y\PYZus{}prime\PYZus{}prime}\PY{p}{(}\PY{n}{x}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{,} \PY{n}{y}\PY{p}{[}\PY{n}{i}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{,} \PY{n}{y\PYZus{}prime}\PY{p}{[}\PY{n}{i}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{)}
+        \PY{n}{y}\PY{p}{[}\PY{n}{i}\PY{p}{]} \PY{o}{=} \PY{n}{y}\PY{p}{[}\PY{n}{i}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{]} \PY{o}{+} \PY{n}{h} \PY{o}{*} \PY{n}{y\PYZus{}prime}\PY{p}{[}\PY{n}{i}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{]}
+
+    \PY{k}{return} \PY{n}{x}\PY{p}{,} \PY{n}{y}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \hypertarget{examples}{%
+\subsection{Examples}\label{examples}}
+
+    \hypertarget{fracd2ydx2-y}{%
+\subsubsection{\texorpdfstring{\[\frac{d^2y}{dx^2} = y\]}{\textbackslash frac\{d\^{}2y\}\{dx\^{}2\} = y}}\label{fracd2ydx2-y}}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{4}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k}{def} \PY{n+nf}{y\PYZus{}prime\PYZus{}prime}\PY{p}{(}\PY{n}{x}\PY{p}{,} \PY{n}{y}\PY{p}{,} \PY{n}{y\PYZus{}prime}\PY{p}{)}\PY{p}{:}
+    \PY{k}{return} \PY{n}{y}
+
+
+\PY{n}{x\PYZus{}i} \PY{o}{=} \PY{l+m+mi}{0}
+\PY{n}{x\PYZus{}f} \PY{o}{=} \PY{l+m+mi}{5}
+\PY{n}{h} \PY{o}{=} \PY{l+m+mf}{0.1}
+
+\PY{n}{y\PYZus{}i} \PY{o}{=} \PY{l+m+mi}{1}
+\PY{n}{y\PYZus{}prime\PYZus{}i} \PY{o}{=} \PY{l+m+mi}{1}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{5}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} Euler approximation}
+\PY{n}{points}\PY{p}{,} \PY{n}{y\PYZus{}euler} \PY{o}{=} \PY{n}{solve\PYZus{}euler}\PY{p}{(}\PY{n}{y\PYZus{}prime\PYZus{}prime}\PY{p}{,} \PY{n}{x\PYZus{}i}\PY{p}{,} \PY{n}{x\PYZus{}f}\PY{p}{,} \PY{n}{y\PYZus{}i}\PY{p}{,} \PY{n}{y\PYZus{}prime\PYZus{}i}\PY{p}{,} \PY{n}{h}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} Trial solution}
+\PY{n}{y\PYZus{}trial} \PY{o}{=} \PY{n}{exp}\PY{p}{(}\PY{n}{points}\PY{p}{)} \PY{o}{\PYZhy{}} \PY{l+m+mi}{1}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{6}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{plt}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{points}\PY{p}{,} \PY{n}{y\PYZus{}euler}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{euler approximation}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{points}\PY{p}{,} \PY{n}{y\PYZus{}trial}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{.}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{trial solution (\PYZdl{}e\PYZca{}x \PYZhy{} 1\PYZdl{})}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{legend}\PY{p}{(}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{10_Euler_method_for_solving_second_order_differential_equations_files/10_Euler_method_for_solving_second_order_differential_equations_12_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \hypertarget{fracd2ydx2--y}{%
+\subsubsection{\texorpdfstring{\[\frac{d^2y}{dx^2} = -y\]}{\textbackslash frac\{d\^{}2y\}\{dx\^{}2\} = -y}}\label{fracd2ydx2--y}}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{7}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k}{def} \PY{n+nf}{y\PYZus{}prime\PYZus{}prime}\PY{p}{(}\PY{n}{x}\PY{p}{,} \PY{n}{y}\PY{p}{,} \PY{n}{y\PYZus{}prime}\PY{p}{)}\PY{p}{:}
+    \PY{k}{return} \PY{o}{\PYZhy{}}\PY{n}{y}
+
+
+\PY{n}{x\PYZus{}i} \PY{o}{=} \PY{l+m+mi}{0}
+\PY{n}{x\PYZus{}f} \PY{o}{=} \PY{l+m+mi}{2} \PY{o}{*} \PY{n}{pi}
+\PY{n}{h} \PY{o}{=} \PY{l+m+mf}{0.1}
+
+\PY{n}{y\PYZus{}i} \PY{o}{=} \PY{l+m+mi}{0}
+\PY{n}{y\PYZus{}prime\PYZus{}i} \PY{o}{=} \PY{l+m+mi}{1}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{8}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} Euler approximation}
+\PY{n}{points}\PY{p}{,} \PY{n}{y\PYZus{}euler} \PY{o}{=} \PY{n}{solve\PYZus{}euler}\PY{p}{(}\PY{n}{y\PYZus{}prime\PYZus{}prime}\PY{p}{,} \PY{n}{x\PYZus{}i}\PY{p}{,} \PY{n}{x\PYZus{}f}\PY{p}{,} \PY{n}{y\PYZus{}i}\PY{p}{,} \PY{n}{y\PYZus{}prime\PYZus{}i}\PY{p}{,} \PY{n}{h}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} Trial solution}
+\PY{n}{y\PYZus{}trial} \PY{o}{=} \PY{n}{sin}\PY{p}{(}\PY{n}{points}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{9}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{plt}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{points}\PY{p}{,} \PY{n}{y\PYZus{}euler}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{euler approximation}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{points}\PY{p}{,} \PY{n}{y\PYZus{}trial}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{.}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{trial solution (\PYZdl{}sin(x)\PYZdl{})}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{legend}\PY{p}{(}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{10_Euler_method_for_solving_second_order_differential_equations_files/10_Euler_method_for_solving_second_order_differential_equations_16_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \hypertarget{real-world-physics-problems}{%
+\subsection{Real world physics
+problems}\label{real-world-physics-problems}}
+
+    \hypertarget{harmonic-oscillator}{%
+\subsubsection{Harmonic oscillator}\label{harmonic-oscillator}}
+
+    The equation of motion for an ideal harmonic oscillator is,
+\[m \frac{d^2x}{dt^2} = -kx\] \[m \ddot x = -kx\]
+
+In presence of the force of friction proprtional to the velocity
+(\(\dot x\)) of the harmonic oscillator the equation becomes,
+\[m \ddot x = -kx - b \dot x\]
+
+Which can further be expressed in the standard form,
+\[\ddot x + 2 \gamma \dot x + \omega^2 x = 0\]
+
+where, \(\gamma = b/2m\) and \(\omega^2 = k/m\).
+
+    \hypertarget{undamped-harmonic-oscillator}{%
+\paragraph{Undamped harmonic
+oscillator}\label{undamped-harmonic-oscillator}}
+
+\[\gamma = 0\]
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{10}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{gamma} \PY{o}{=} \PY{l+m+mi}{0}
+\PY{n}{omega} \PY{o}{=} \PY{l+m+mi}{2}
+
+
+\PY{k}{def} \PY{n+nf}{x\PYZus{}prime\PYZus{}prime}\PY{p}{(}\PY{n}{t}\PY{p}{,} \PY{n}{x}\PY{p}{,} \PY{n}{x\PYZus{}prime}\PY{p}{)}\PY{p}{:}
+    \PY{k}{return} \PY{o}{\PYZhy{}} \PY{l+m+mi}{2} \PY{o}{*} \PY{n}{gamma} \PY{o}{*} \PY{n}{x\PYZus{}prime} \PY{o}{\PYZhy{}} \PY{n}{omega}\PY{o}{*}\PY{o}{*}\PY{l+m+mi}{2} \PY{o}{*} \PY{n}{x}
+
+
+\PY{n}{t\PYZus{}i} \PY{o}{=} \PY{l+m+mi}{0}
+\PY{n}{t\PYZus{}f} \PY{o}{=} \PY{l+m+mi}{5} \PY{o}{*} \PY{n}{pi}
+\PY{n}{x\PYZus{}i} \PY{o}{=} \PY{l+m+mi}{0}
+\PY{n}{x\PYZus{}prime\PYZus{}i} \PY{o}{=} \PY{l+m+mi}{1}
+\PY{n}{h} \PY{o}{=} \PY{l+m+mf}{0.001}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{11}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{points}\PY{p}{,} \PY{n}{x\PYZus{}undamp} \PY{o}{=} \PY{n}{solve\PYZus{}euler}\PY{p}{(}\PY{n}{x\PYZus{}prime\PYZus{}prime}\PY{p}{,} \PY{n}{t\PYZus{}i}\PY{p}{,} \PY{n}{t\PYZus{}f}\PY{p}{,} \PY{n}{x\PYZus{}i}\PY{p}{,} \PY{n}{x\PYZus{}prime\PYZus{}i}\PY{p}{,} \PY{n}{h}\PY{p}{)}
+
+\PY{n}{plt}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{points}\PY{p}{,} \PY{n}{x\PYZus{}undamp}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{title}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Undamped harmonic oscillator}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{xlabel}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{\PYZdl{}t (s) }\PY{l+s+se}{\PYZbs{}\PYZbs{}}\PY{l+s+s2}{rightarrow\PYZdl{}}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{ylabel}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{\PYZdl{}x (units) }\PY{l+s+se}{\PYZbs{}\PYZbs{}}\PY{l+s+s2}{rightarrow\PYZdl{}}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{10_Euler_method_for_solving_second_order_differential_equations_files/10_Euler_method_for_solving_second_order_differential_equations_22_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \hypertarget{under-damped-harmonic-oscillator}{%
+\paragraph{Under-damped harmonic
+oscillator}\label{under-damped-harmonic-oscillator}}
+
+\[\gamma^2 < \omega^2\]
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{12}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{gamma} \PY{o}{=} \PY{l+m+mf}{0.5}
+\PY{n}{omega} \PY{o}{=} \PY{l+m+mi}{5}
+
+
+\PY{k}{def} \PY{n+nf}{x\PYZus{}prime\PYZus{}prime}\PY{p}{(}\PY{n}{t}\PY{p}{,} \PY{n}{x}\PY{p}{,} \PY{n}{x\PYZus{}prime}\PY{p}{)}\PY{p}{:}
+    \PY{k}{return} \PY{o}{\PYZhy{}} \PY{l+m+mi}{2} \PY{o}{*} \PY{n}{gamma} \PY{o}{*} \PY{n}{x\PYZus{}prime} \PY{o}{\PYZhy{}} \PY{n}{omega}\PY{o}{*}\PY{o}{*}\PY{l+m+mi}{2} \PY{o}{*} \PY{n}{x}
+
+
+\PY{n}{t\PYZus{}i} \PY{o}{=} \PY{l+m+mi}{0}
+\PY{n}{t\PYZus{}f} \PY{o}{=} \PY{l+m+mi}{5} \PY{o}{*} \PY{n}{pi}
+\PY{n}{x\PYZus{}i} \PY{o}{=} \PY{l+m+mi}{10}
+\PY{n}{x\PYZus{}prime\PYZus{}i} \PY{o}{=} \PY{l+m+mi}{1}
+\PY{n}{h} \PY{o}{=} \PY{l+m+mf}{0.001}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{13}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{points}\PY{p}{,} \PY{n}{x\PYZus{}under} \PY{o}{=} \PY{n}{solve\PYZus{}euler}\PY{p}{(}\PY{n}{x\PYZus{}prime\PYZus{}prime}\PY{p}{,} \PY{n}{t\PYZus{}i}\PY{p}{,} \PY{n}{t\PYZus{}f}\PY{p}{,} \PY{n}{x\PYZus{}i}\PY{p}{,} \PY{n}{x\PYZus{}prime\PYZus{}i}\PY{p}{,} \PY{n}{h}\PY{p}{)}
+
+\PY{n}{plt}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{points}\PY{p}{,} \PY{n}{x\PYZus{}under}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{title}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Under\PYZhy{}damped harmonic oscillator}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{xlabel}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{\PYZdl{}t (s) }\PY{l+s+se}{\PYZbs{}\PYZbs{}}\PY{l+s+s2}{rightarrow\PYZdl{}}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{ylabel}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{\PYZdl{}x (units) }\PY{l+s+se}{\PYZbs{}\PYZbs{}}\PY{l+s+s2}{rightarrow\PYZdl{}}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{10_Euler_method_for_solving_second_order_differential_equations_files/10_Euler_method_for_solving_second_order_differential_equations_25_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \hypertarget{critically-damped-harmonic-oscillator}{%
+\paragraph{Critically-damped harmonic
+oscillator}\label{critically-damped-harmonic-oscillator}}
+
+\[\gamma^2 = \omega^2\]
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{14}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{gamma} \PY{o}{=} \PY{l+m+mi}{2}
+\PY{n}{omega} \PY{o}{=} \PY{l+m+mi}{2}
+
+
+\PY{k}{def} \PY{n+nf}{x\PYZus{}prime\PYZus{}prime}\PY{p}{(}\PY{n}{t}\PY{p}{,} \PY{n}{x}\PY{p}{,} \PY{n}{x\PYZus{}prime}\PY{p}{)}\PY{p}{:}
+    \PY{k}{return} \PY{o}{\PYZhy{}} \PY{l+m+mi}{2} \PY{o}{*} \PY{n}{gamma} \PY{o}{*} \PY{n}{x\PYZus{}prime} \PY{o}{\PYZhy{}} \PY{n}{omega}\PY{o}{*}\PY{o}{*}\PY{l+m+mi}{2} \PY{o}{*} \PY{n}{x}
+
+
+\PY{n}{t\PYZus{}i} \PY{o}{=} \PY{l+m+mi}{0}
+\PY{n}{t\PYZus{}f} \PY{o}{=} \PY{l+m+mi}{5} \PY{o}{*} \PY{n}{pi}
+\PY{n}{x\PYZus{}i} \PY{o}{=} \PY{l+m+mi}{10}
+\PY{n}{x\PYZus{}prime\PYZus{}i} \PY{o}{=} \PY{l+m+mi}{1}
+\PY{n}{h} \PY{o}{=} \PY{l+m+mf}{0.001}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{15}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{points}\PY{p}{,} \PY{n}{x\PYZus{}critical} \PY{o}{=} \PY{n}{solve\PYZus{}euler}\PY{p}{(}
+    \PY{n}{x\PYZus{}prime\PYZus{}prime}\PY{p}{,} \PY{n}{t\PYZus{}i}\PY{p}{,} \PY{n}{t\PYZus{}f}\PY{p}{,} \PY{n}{x\PYZus{}i}\PY{p}{,} \PY{n}{x\PYZus{}prime\PYZus{}i}\PY{p}{,} \PY{n}{h}\PY{p}{)}
+
+\PY{n}{plt}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{points}\PY{p}{,} \PY{n}{x\PYZus{}critical}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{title}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Critically\PYZhy{}damped harmonic oscillator}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{xlabel}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{\PYZdl{}t (s) }\PY{l+s+se}{\PYZbs{}\PYZbs{}}\PY{l+s+s2}{rightarrow\PYZdl{}}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{ylabel}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{\PYZdl{}x (units) }\PY{l+s+se}{\PYZbs{}\PYZbs{}}\PY{l+s+s2}{rightarrow\PYZdl{}}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{10_Euler_method_for_solving_second_order_differential_equations_files/10_Euler_method_for_solving_second_order_differential_equations_28_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \hypertarget{over-damped-harmonic-oscillator}{%
+\paragraph{Over-damped harmonic
+oscillator}\label{over-damped-harmonic-oscillator}}
+
+\[\gamma^2 > \omega^2\]
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{16}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{gamma} \PY{o}{=} \PY{l+m+mi}{3}
+\PY{n}{omega} \PY{o}{=} \PY{l+m+mi}{1}
+
+
+\PY{k}{def} \PY{n+nf}{x\PYZus{}prime\PYZus{}prime}\PY{p}{(}\PY{n}{t}\PY{p}{,} \PY{n}{x}\PY{p}{,} \PY{n}{x\PYZus{}prime}\PY{p}{)}\PY{p}{:}
+    \PY{k}{return} \PY{o}{\PYZhy{}} \PY{l+m+mi}{2} \PY{o}{*} \PY{n}{gamma} \PY{o}{*} \PY{n}{x\PYZus{}prime} \PY{o}{\PYZhy{}} \PY{n}{omega}\PY{o}{*}\PY{o}{*}\PY{l+m+mi}{2} \PY{o}{*} \PY{n}{x}
+
+
+\PY{n}{t\PYZus{}i} \PY{o}{=} \PY{l+m+mi}{0}
+\PY{n}{t\PYZus{}f} \PY{o}{=} \PY{l+m+mi}{5} \PY{o}{*} \PY{n}{pi}
+\PY{n}{x\PYZus{}i} \PY{o}{=} \PY{l+m+mi}{10}
+\PY{n}{x\PYZus{}prime\PYZus{}i} \PY{o}{=} \PY{l+m+mi}{1}
+\PY{n}{h} \PY{o}{=} \PY{l+m+mf}{0.001}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{17}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{points}\PY{p}{,} \PY{n}{x\PYZus{}over} \PY{o}{=} \PY{n}{solve\PYZus{}euler}\PY{p}{(}\PY{n}{x\PYZus{}prime\PYZus{}prime}\PY{p}{,} \PY{n}{t\PYZus{}i}\PY{p}{,} \PY{n}{t\PYZus{}f}\PY{p}{,} \PY{n}{x\PYZus{}i}\PY{p}{,} \PY{n}{x\PYZus{}prime\PYZus{}i}\PY{p}{,} \PY{n}{h}\PY{p}{)}
+
+\PY{n}{plt}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{points}\PY{p}{,} \PY{n}{x\PYZus{}over}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{title}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Over\PYZhy{}damped harmonic oscillator}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{xlabel}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{\PYZdl{}t (s) }\PY{l+s+se}{\PYZbs{}\PYZbs{}}\PY{l+s+s2}{rightarrow\PYZdl{}}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{ylabel}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{\PYZdl{}x (units) }\PY{l+s+se}{\PYZbs{}\PYZbs{}}\PY{l+s+s2}{rightarrow\PYZdl{}}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{10_Euler_method_for_solving_second_order_differential_equations_files/10_Euler_method_for_solving_second_order_differential_equations_31_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \hypertarget{comparing-different-types-of-damped-oscillations}{%
+\subsubsection{Comparing different types of damped
+oscillations}\label{comparing-different-types-of-damped-oscillations}}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{18}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{plt}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{points}\PY{p}{,} \PY{n}{x\PYZus{}under}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{under\PYZhy{}damped}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{points}\PY{p}{,} \PY{n}{x\PYZus{}critical}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{critically\PYZhy{}damped}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{points}\PY{p}{,} \PY{n}{x\PYZus{}over}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{over\PYZhy{}damped}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{title}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Comparing different types of damped oscillations}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{xlabel}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{\PYZdl{}t (s) }\PY{l+s+se}{\PYZbs{}\PYZbs{}}\PY{l+s+s2}{rightarrow\PYZdl{}}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{ylabel}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{\PYZdl{}x (units) }\PY{l+s+se}{\PYZbs{}\PYZbs{}}\PY{l+s+s2}{rightarrow\PYZdl{}}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{legend}\PY{p}{(}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{10_Euler_method_for_solving_second_order_differential_equations_files/10_Euler_method_for_solving_second_order_differential_equations_33_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \hypertarget{forced-harmonic-oscillator}{%
+\paragraph{Forced harmonic
+oscillator}\label{forced-harmonic-oscillator}}
+
+\[\;\]
+
+    For forced harmonic oscillator the quation of motion becomes,
+\[\ddot x + 2 \gamma \dot x + \omega^2 x = f_o sin(\alpha t)\]
+\[\ddot x = - 2 \gamma \dot x + \omega^2 x - f_o sin(\alpha t)\]
+
+where, \(f_o\) is the apmlituted and \(\alpha\) is the andgular
+frequency of the given force.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{19}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{gamma} \PY{o}{=} \PY{l+m+mi}{3}
+\PY{n}{omega} \PY{o}{=} \PY{l+m+mi}{1}
+\PY{n}{f\PYZus{}0} \PY{o}{=} \PY{l+m+mi}{5}
+\PY{n}{alpha} \PY{o}{=} \PY{l+m+mi}{3}
+
+
+\PY{k}{def} \PY{n+nf}{x\PYZus{}prime\PYZus{}prime}\PY{p}{(}\PY{n}{t}\PY{p}{,} \PY{n}{x}\PY{p}{,} \PY{n}{x\PYZus{}prime}\PY{p}{)}\PY{p}{:}
+    \PY{k}{return} \PY{o}{\PYZhy{}} \PY{l+m+mi}{2} \PY{o}{*} \PY{n}{gamma} \PY{o}{*} \PY{n}{x\PYZus{}prime} \PY{o}{\PYZhy{}} \PY{n}{omega}\PY{o}{*}\PY{o}{*}\PY{l+m+mi}{2} \PY{o}{*} \PY{n}{x} \PY{o}{+} \PY{n}{f\PYZus{}0} \PY{o}{*} \PY{n}{sin}\PY{p}{(}\PY{n}{alpha} \PY{o}{*} \PY{n}{t}\PY{p}{)}
+
+
+\PY{n}{t\PYZus{}i} \PY{o}{=} \PY{l+m+mi}{0}
+\PY{n}{t\PYZus{}f} \PY{o}{=} \PY{l+m+mi}{10} \PY{o}{*} \PY{n}{pi}
+\PY{n}{x\PYZus{}i} \PY{o}{=} \PY{l+m+mi}{1}
+\PY{n}{x\PYZus{}prime\PYZus{}i} \PY{o}{=} \PY{l+m+mi}{0}
+\PY{n}{h} \PY{o}{=} \PY{l+m+mf}{0.001}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{20}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{points}\PY{p}{,} \PY{n}{x\PYZus{}forced} \PY{o}{=} \PY{n}{solve\PYZus{}euler}\PY{p}{(}\PY{n}{x\PYZus{}prime\PYZus{}prime}\PY{p}{,} \PY{n}{t\PYZus{}i}\PY{p}{,} \PY{n}{t\PYZus{}f}\PY{p}{,} \PY{n}{x\PYZus{}i}\PY{p}{,} \PY{n}{x\PYZus{}prime\PYZus{}i}\PY{p}{,} \PY{n}{h}\PY{p}{)}
+
+\PY{n}{plt}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{points}\PY{p}{,} \PY{n}{x\PYZus{}forced}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{title}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Forced harmonic oscillator}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{xlabel}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{\PYZdl{}t (s) }\PY{l+s+se}{\PYZbs{}\PYZbs{}}\PY{l+s+s2}{rightarrow\PYZdl{}}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{ylabel}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{\PYZdl{}x (units) }\PY{l+s+se}{\PYZbs{}\PYZbs{}}\PY{l+s+s2}{rightarrow\PYZdl{}}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{10_Euler_method_for_solving_second_order_differential_equations_files/10_Euler_method_for_solving_second_order_differential_equations_37_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \hypertarget{undamped-forced-resonating-oscillator}{%
+\paragraph{Undamped forced resonating
+oscillator}\label{undamped-forced-resonating-oscillator}}
+
+    For forced harmonic oscillator the quation of motion becomes,
+\[\ddot x + \omega^2 x = f_o sin(\alpha x)\]
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{21}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{gamma} \PY{o}{=} \PY{l+m+mi}{0}
+\PY{n}{omega} \PY{o}{=} \PY{l+m+mi}{2}
+\PY{n}{f\PYZus{}0} \PY{o}{=} \PY{l+m+mi}{2}
+\PY{n}{alpha} \PY{o}{=} \PY{l+m+mi}{2}
+
+
+\PY{k}{def} \PY{n+nf}{x\PYZus{}prime\PYZus{}prime}\PY{p}{(}\PY{n}{t}\PY{p}{,} \PY{n}{x}\PY{p}{,} \PY{n}{x\PYZus{}prime}\PY{p}{)}\PY{p}{:}
+    \PY{k}{return} \PY{o}{\PYZhy{}} \PY{l+m+mi}{2} \PY{o}{*} \PY{n}{gamma} \PY{o}{*} \PY{n}{x\PYZus{}prime} \PY{o}{\PYZhy{}} \PY{n}{omega}\PY{o}{*}\PY{o}{*}\PY{l+m+mi}{2} \PY{o}{*} \PY{n}{x} \PY{o}{+} \PY{n}{f\PYZus{}0} \PY{o}{*} \PY{n}{sin}\PY{p}{(}\PY{n}{alpha} \PY{o}{*} \PY{n}{t}\PY{p}{)}
+
+
+\PY{n}{t\PYZus{}i} \PY{o}{=} \PY{l+m+mi}{0}
+\PY{n}{t\PYZus{}f} \PY{o}{=} \PY{l+m+mi}{10} \PY{o}{*} \PY{n}{pi}
+\PY{n}{x\PYZus{}i} \PY{o}{=} \PY{l+m+mi}{0}
+\PY{n}{x\PYZus{}prime\PYZus{}i} \PY{o}{=} \PY{l+m+mi}{0}
+\PY{n}{h} \PY{o}{=} \PY{l+m+mf}{0.001}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{22}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{points}\PY{p}{,} \PY{n}{x\PYZus{}resonance} \PY{o}{=} \PY{n}{solve\PYZus{}euler}\PY{p}{(}\PY{n}{x\PYZus{}prime\PYZus{}prime}\PY{p}{,} \PY{n}{t\PYZus{}i}\PY{p}{,} \PY{n}{t\PYZus{}f}\PY{p}{,} \PY{n}{x\PYZus{}i}\PY{p}{,} \PY{n}{x\PYZus{}prime\PYZus{}i}\PY{p}{,} \PY{n}{h}\PY{p}{)}
+
+\PY{n}{plt}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{points}\PY{p}{,} \PY{n}{x\PYZus{}resonance}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{title}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Undamped forced resonating oscillator}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{xlabel}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{\PYZdl{}t (s) }\PY{l+s+se}{\PYZbs{}\PYZbs{}}\PY{l+s+s2}{rightarrow\PYZdl{}}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{ylabel}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{\PYZdl{}x (units) }\PY{l+s+se}{\PYZbs{}\PYZbs{}}\PY{l+s+s2}{rightarrow\PYZdl{}}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{10_Euler_method_for_solving_second_order_differential_equations_files/10_Euler_method_for_solving_second_order_differential_equations_41_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \hypertarget{projectile-motion}{%
+\subsubsection{Projectile Motion}\label{projectile-motion}}
+
+    A projectile motion is characterised by, \[\frac{d^2x}{dt^2} = 0\]
+\[\frac{d^2y}{dt^2} = -g\]
+
+where, \(g\) is acceleration due to gravity.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{23}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k}{def} \PY{n+nf}{x\PYZus{}prime\PYZus{}prime}\PY{p}{(}\PY{n}{t}\PY{p}{,} \PY{n}{x}\PY{p}{,} \PY{n}{x\PYZus{}prime}\PY{p}{)}\PY{p}{:}
+    \PY{k}{return} \PY{l+m+mf}{0.0}
+
+
+\PY{k}{def} \PY{n+nf}{y\PYZus{}prime\PYZus{}prime}\PY{p}{(}\PY{n}{t}\PY{p}{,} \PY{n}{y}\PY{p}{,} \PY{n}{y\PYZus{}prime}\PY{p}{)}\PY{p}{:}
+    \PY{k}{return} \PY{o}{\PYZhy{}} \PY{n}{g}
+
+
+\PY{n}{u} \PY{o}{=} \PY{l+m+mi}{100}
+\PY{n}{thetas} \PY{o}{=} \PY{p}{[}\PY{l+m+mi}{15}\PY{p}{,} \PY{l+m+mi}{30}\PY{p}{,} \PY{l+m+mi}{45}\PY{p}{,} \PY{l+m+mi}{60}\PY{p}{]}
+\PY{n}{x\PYZus{}i}\PY{p}{,} \PY{n}{y\PYZus{}i} \PY{o}{=} \PY{p}{(}\PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{)}
+
+\PY{n}{t\PYZus{}i} \PY{o}{=} \PY{l+m+mi}{0}
+\PY{n}{t\PYZus{}f} \PY{o}{=} \PY{l+m+mi}{25}
+\PY{n}{h} \PY{o}{=} \PY{l+m+mf}{0.001}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{24}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} Plotting projectile motion for different angles with same initial velocity}
+\PY{k}{for} \PY{n}{theta} \PY{o+ow}{in} \PY{n}{thetas}\PY{p}{:}
+
+    \PY{n}{x\PYZus{}prime\PYZus{}i} \PY{o}{=} \PY{n}{u} \PY{o}{*} \PY{n}{cos}\PY{p}{(}\PY{n}{theta} \PY{o}{*} \PY{p}{(}\PY{n}{pi} \PY{o}{/} \PY{l+m+mi}{180}\PY{p}{)}\PY{p}{)}
+    \PY{n}{y\PYZus{}prime\PYZus{}i} \PY{o}{=} \PY{n}{u} \PY{o}{*} \PY{n}{sin}\PY{p}{(}\PY{n}{theta} \PY{o}{*} \PY{p}{(}\PY{n}{pi} \PY{o}{/} \PY{l+m+mi}{180}\PY{p}{)}\PY{p}{)}
+
+    \PY{n}{points}\PY{p}{,} \PY{n}{x} \PY{o}{=} \PY{n}{solve\PYZus{}euler}\PY{p}{(}\PY{n}{x\PYZus{}prime\PYZus{}prime}\PY{p}{,} \PY{n}{t\PYZus{}i}\PY{p}{,} \PY{n}{t\PYZus{}f}\PY{p}{,} \PY{n}{x\PYZus{}i}\PY{p}{,} \PY{n}{x\PYZus{}prime\PYZus{}i}\PY{p}{,} \PY{n}{h}\PY{p}{)}
+
+    \PY{n}{points}\PY{p}{,} \PY{n}{y} \PY{o}{=} \PY{n}{solve\PYZus{}euler}\PY{p}{(}\PY{n}{y\PYZus{}prime\PYZus{}prime}\PY{p}{,} \PY{n}{t\PYZus{}i}\PY{p}{,} \PY{n}{t\PYZus{}f}\PY{p}{,} \PY{n}{y\PYZus{}i}\PY{p}{,} \PY{n}{y\PYZus{}prime\PYZus{}i}\PY{p}{,} \PY{n}{h}\PY{p}{)}
+    \PY{n}{y}\PY{p}{[}\PY{n}{y} \PY{o}{\PYZlt{}} \PY{l+m+mi}{0}\PY{p}{]} \PY{o}{=} \PY{k+kc}{None}
+
+    \PY{n}{plt}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{x}\PY{p}{,} \PY{n}{y}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s+sa}{f}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{\PYZdl{}u = }\PY{l+s+si}{\PYZob{}}\PY{n}{u}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s2}{, }\PY{l+s+se}{\PYZbs{}\PYZbs{}}\PY{l+s+s2}{theta = }\PY{l+s+si}{\PYZob{}}\PY{n}{theta}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s2}{\PYZca{}}\PY{l+s+se}{\PYZbs{}\PYZbs{}}\PY{l+s+s2}{circ\PYZdl{}}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+
+\PY{n}{plt}\PY{o}{.}\PY{n}{title}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Projectile Motion}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{xlabel}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{\PYZdl{}x (units) }\PY{l+s+se}{\PYZbs{}\PYZbs{}}\PY{l+s+s2}{rightarrow\PYZdl{}}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{ylabel}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{\PYZdl{}y (units) }\PY{l+s+se}{\PYZbs{}\PYZbs{}}\PY{l+s+s2}{rightarrow\PYZdl{}}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{legend}\PY{p}{(}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{10_Euler_method_for_solving_second_order_differential_equations_files/10_Euler_method_for_solving_second_order_differential_equations_45_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+
+    % Add a bibliography block to the postdoc
+    
+    
+    
