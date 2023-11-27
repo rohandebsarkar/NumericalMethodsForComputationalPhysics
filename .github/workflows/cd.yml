@@ -25,7 +25,7 @@ jobs:
       - name: Install dependencies
         uses: awalsh128/cache-apt-pkgs-action@latest
         with:
-          packages: jupyter pandoc texlive-xetex
+          packages: jupyter pandoc texlive-xetex python-jedi
           version: 0.1
 
       - name: Generate LaTeX files
@@ -47,11 +47,6 @@ jobs:
       - uses: actions/checkout@v3
         with:
           ref: generated-latex
-
-      - name: Cache Docker images
-        uses: ScribeMD/docker-cache@0.3.6
-        with:
-          key: docker-${{ runner.os }}-${{ hashFiles('.github/workflows/generate_pdf.yml') }}
       
       - name: Github Action for LaTeX
         uses: xu-cheng/latex-action@v2
