@@ -26,6 +26,11 @@ jobs:
         with:
           ref: generated-latex
 
+      - name: Cache Docker images
+        uses: ScribeMD/docker-cache@0.3.6
+        with:
+          key: docker-${{ runner.os }}-${{ hashFiles('.github/workflows/generate_pdf.yml') }}
+      
       - name: Github Action for LaTeX
         uses: xu-cheng/latex-action@v2
         with:
