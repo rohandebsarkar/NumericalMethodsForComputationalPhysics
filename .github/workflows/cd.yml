@@ -23,7 +23,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Install dependencies
-        run: sudo apt update && sudo apt install -y jupyter pandoc texlive-xetex python-jedi
+        run: sudo apt update && sudo apt install -y jupyter pandoc texlive-xetex
 
       - name: Generate LaTeX files
         run: python scripts/jupyter_notebook_to_latex.py
