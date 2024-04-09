@@ -48,14 +48,13 @@ def jupyter_notebook_to_latex(path_to_jupyter_notebooks, path_to_latex_files, pa
     for i in latex_files:
         delete_files(i, path_to_jupyter_notebooks)
 
-path_to_jupyter_notebooks = "projects/undergraduate/Mathematical_Physics_II/JupyterNotebook"
-path_to_latex_files = "projects/undergraduate/Mathematical_Physics_II/LaTeX/input/JupyterNotebook"
-path_to_main_latex_file = "projects/undergraduate/Mathematical_Physics_II/LaTeX"
 
-jupyter_notebook_to_latex(path_to_jupyter_notebooks, path_to_latex_files, path_to_main_latex_file)
 
-path_to_jupyter_notebooks = "projects/undergraduate/Quantum_Mechanics/JupyterNotebook"
-path_to_latex_files = "projects/undergraduate/Quantum_Mechanics/LaTeX/input/JupyterNotebook"
-path_to_main_latex_file = "projects/undergraduate/Quantum_Mechanics/LaTeX"
+project_folders = ["Mathematical_Physics_II", "Quantum_Mechanics"]
 
-jupyter_notebook_to_latex(path_to_jupyter_notebooks, path_to_latex_files, path_to_main_latex_file)
+for i in range(len(project_folders)):
+    path_to_jupyter_notebooks = "projects/undergraduate/" + project_folders[i] +"/JupyterNotebook"
+    path_to_latex_files = "projects/undergraduate/" + project_folders[i] +"/LaTeX/input/JupyterNotebook"
+    path_to_main_latex_file = "projects/undergraduate/" + project_folders[i] +"/LaTeX"
+
+    jupyter_notebook_to_latex(path_to_jupyter_notebooks, path_to_latex_files, path_to_main_latex_file)
